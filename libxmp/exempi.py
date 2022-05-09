@@ -50,6 +50,20 @@ def _load_exempi():
     Loads exempi library.
     """
     path = ctypes.util.find_library('exempi')
+
+    if path is None:
+        if os.name == 'nt':
+            library_paths = ("libexempi.dll",)
+        elif sys.platform == "darwin":
+            library_paths = ("libexempi.0.dylib", "libexempi.dylib")
+        else:
+            library_paths = ("libexempi.so.0", "libexempi.so.8")
+        script_dir = os.path.dirname(__file__)
+        for library_path in library_paths:
+            absolute_library_path = os.path.join(script_dir, library_path)
+            if os.path.isfile(absolute_library_path):
+                path = library_path
+
     if path is None:
         if platform.system().startswith('Darwin'):
             if os.path.exists('/opt/local/lib/libexempi.dylib'):
